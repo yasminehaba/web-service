@@ -1,22 +1,29 @@
 {
-  "name": "projet-webservice",
+  "name": "urban-traffic-platform",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Plateforme Intelligente de Gestion du Trafic Urbain",
+  "private": true,
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "@apollo/server": "^5.5.1",
-    "express": "^5.2.1",
-    "graphql": "^16.14.0"
+    "install:all": "npm install && cd services/auth && npm install && cd ../vehicles && npm install && cd ../traffic && npm install && cd ../incidents && npm install && cd ../notifications && npm install && cd ../../gateway && npm install",
+    "start:gateway": "cd gateway && node index.js",
+    "start:auth": "cd services/auth && node index.js",
+    "start:vehicles": "cd services/vehicles && node index.js",
+    "start:traffic": "cd services/traffic && node index.js",
+    "start:incidents": "cd services/incidents && node index.js",
+    "start:notifications": "cd services/notifications && node index.js",
+    "dev:all": "concurrently \"npm run start:auth\" \"npm run start:vehicles\" \"npm run start:traffic\" \"npm run start:incidents\" \"npm run start:notifications\" \"npm run start:gateway\"",
+    "test:all": "jest --coverage",
+    "test:auth": "cd services/auth && npm test",
+    "test:gateway": "cd gateway && npm test",
+    "test:vehicles": "cd services/vehicles && npm test",
+    "test:traffic": "cd services/traffic && npm test",
+    "test:incidents": "cd services/incidents && npm test",
+    "test:notifications": "cd services/notifications && npm test",
+    "test:help": "node test-help.js"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "concurrently": "^8.2.2",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
   }
 }

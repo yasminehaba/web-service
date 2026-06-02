@@ -3,27 +3,25 @@
   "version": "1.0.0",
   "description": "GraphQL API Gateway for Urban Traffic Platform",
   "main": "index.js",
-"scripts": {
-  "dev": "nodemon index.js",
-  "test": "jest"
-},
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
   "dependencies": {
-    "@apollo/server": "^4.13.0",
+    "@apollo/server": "^4.10.0",
     "axios": "^1.6.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "graphql": "^16.14.0",
+    "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "nodemon": "^3.1.14",
+    "nodemon": "^3.0.2",
     "supertest": "^6.3.3"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  }
 }
