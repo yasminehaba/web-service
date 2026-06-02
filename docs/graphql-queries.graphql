@@ -1,0 +1,615 @@
+# ============================================================
+# Urban Traffic Platform - GraphQL Test Queries
+# Endpoint: http://localhost:4000/graphql
+# ============================================================
+# Add header: Authorization: Bearer <your_token>
+# ============================================================
+
+
+# ─────────────────────────────────────────────────────────────
+# 1. AUTHENTICATION
+# ─────────────────────────────────────────────────────────────
+
+# Register a new user
+mutation Register {
+  register(
+    username: "testoperator"
+    email: "operator@test.com"
+    password: "Operator@123"
+    role: OPERATOR
+  ) {
+    token
+    message
+    user {
+      id
+      username
+      email
+      role
+    }
+  }
+}
+
+# Login
+mutation Login {
+  login(email: "admin@urbantraffic.com", password: "Admin@123") {
+    token
+    message
+    user {
+      id
+      username
+      email
+      role
+    }
+  }
+}
+
+# Get current user profile
+query Me {
+  me {
+    id
+    username
+    email
+    role
+    is_active
+    created_at
+  }
+}
+
+# List all users (ADMIN only)
+query ListUsers {
+  listUsers {
+    id
+    username
+    email
+    role
+    is_active
+  }
+}
+
+# Change user role (ADMIN only)
+mutation ChangeRole {
+  changeUserRole(userId: "2", role: ADMIN) {
+    message
+    success
+  }
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# 2. VEHICLES
+# ─────────────────────────────────────────────────────────────
+
+# Add a new vehicle
+mutation AddVehicle {
+  addVehicle(
+    license_plate: "TU-1111-ZZ"
+    type: CAR
+    brand: "Peugeot"
+    model: "208"
+    color: "Bleu"
+    owner_name: "Ahmed Khlifi"
+    owner_contact: "+216 71 111 111"
+  ) {
+    id
+    license_plate
+    type
+    brand
+    model
+    color
+    owner_name
+    is_active
+    created_at
+  }
+}
+
+# List all vehicles (with filters)
+query ListVehicles {
+  vehicles(page: 1, limit: 10) {
+    vehicles {
+      id
+      license_plate
+      type
+      brand
+      model
+      color
+      is_active
+      position_count
+      last_seen
+    }
+    total
+    page
+    limit
+  }
+}
+
+# Filter by type
+query ListBuses {
+  vehicles(type: BUS, is_active: true) {
+    vehicles {
+      id
+      license_plate
+      type
+      brand
+    }
+    total
+  }
+}
+
+# Get vehicle detail
+query GetVehicle {
+  vehicle(id: "1") {
+    vehicle {
+      id
+      license_plate
+      type
+      brand
+      model
+      owner_name
+    }
+    last_position {
+      latitude
+      longitude
+      speed
+      recorded_at
+    }
+  }
+}
+
+# Record GPS position
+mutation RecordPosition {
+  recordPosition(
+    vehicleId: "1"
+    latitude: 36.8065
+    longitude: 10.1815
+    speed: 45.5
+    heading: 90.0
+  ) {
+    id
+    vehicle_id
+    latitude
+    longitude
+    speed
+    heading
+    recorded_at
+  }
+}
+
+# Get position history
+query GetPositionHistory {
+  vehiclePositions(id: "1", limit: 20) {
+    positions {
+      id
+      latitude
+      longitude
+      speed
+      heading
+      recorded_at
+    }
+    vehicle_id
+    total
+  }
+}
+
+# Simulate vehicle movement
+mutation SimulateMovement {
+  simulateVehicleMovement(vehicleId: "1") {
+    message
+    positions {
+      latitude
+      longitude
+      speed
+    }
+  }
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# 3. TRAFFIC MANAGEMENT
+# ─────────────────────────────────────────────────────────────
+
+# Create traffic zone (ADMIN only)
+mutation CreateZone {
+  createTrafficZone(
+    name: "Place de la République"
+    description: "Grande place centrale"
+    zone_type: INTERSECTION
+    center_lat: 36.8190
+    center_lng: 10.1660
+    radius_meters: 400
+    max_capacity: 150
+  ) {
+    id
+    name
+    zone_type
+    center_lat
+    center_lng
+    radius_meters
+    max_capacity
+  }
+}
+
+# List all zones
+query ListZones {
+  trafficZones {
+    id
+    name
+    zone_type
+    center_lat
+    center_lng
+    current_density
+    is_congested
+    current_vehicles
+    is_active
+  }
+}
+
+# Get zone details with measurements
+query GetZone {
+  trafficZone(id: "1") {
+    zone {
+      id
+      name
+      zone_type
+      max_capacity
+      current_density
+      is_congested
+    }
+    recent_measurements {
+      vehicle_count
+      average_speed
+      density_level
+      congestion_score
+      is_congested
+      measured_at
+    }
+  }
+}
+
+# Record traffic measurement
+mutation MeasureTraffic {
+  measureTraffic(zoneId: "1", vehicle_count: 85, average_speed: 25.5) {
+    id
+    zone_id
+    zone_name
+    vehicle_count
+    average_speed
+    density_level
+    congestion_score
+    is_congested
+    measured_at
+  }
+}
+
+# Simulate traffic in a zone
+mutation SimulateTraffic {
+  simulateTraffic(zoneId: "2") {
+    zone_id
+    vehicle_count
+    average_speed
+    density_level
+    congestion_score
+    is_congested
+  }
+}
+
+# Get congested zones
+query CongestedZones {
+  congestedZones {
+    congested_zones {
+      zone_id
+      vehicle_count
+      average_speed
+      density_level
+      congestion_score
+      measured_at
+    }
+    total
+  }
+}
+
+# Global traffic statistics
+query TrafficStats {
+  trafficStats {
+    total_zones
+    low_density_zones
+    medium_density_zones
+    high_density_zones
+    congested_zones
+    avg_speed
+    total_vehicles
+    timestamp
+  }
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# 4. INCIDENTS
+# ─────────────────────────────────────────────────────────────
+
+# Declare an incident
+mutation DeclareIncident {
+  declareIncident(
+    title: "Accident sur Avenue Bourguiba"
+    description: "Collision entre deux véhicules, voie droite bloquée"
+    type: ACCIDENT
+    severity: HIGH
+    latitude: 36.8065
+    longitude: 10.1815
+    zoneId: "1"
+  ) {
+    id
+    title
+    type
+    status
+    severity
+    latitude
+    longitude
+    created_at
+  }
+}
+
+# List incidents (with filters)
+query ListIncidents {
+  incidents(page: 1, limit: 10) {
+    incidents {
+      id
+      title
+      type
+      status
+      severity
+      zone_name
+      created_at
+    }
+    total
+    page
+  }
+}
+
+# Filter active incidents
+query ActiveIncidents {
+  incidents(status: REPORTED) {
+    incidents {
+      id
+      title
+      type
+      severity
+      status
+      created_at
+    }
+    total
+  }
+}
+
+# Get incident detail with history
+query GetIncident {
+  incident(id: "1") {
+    incident {
+      id
+      title
+      description
+      type
+      status
+      severity
+      zone_name
+      created_at
+    }
+    history {
+      message
+      old_status
+      new_status
+      created_at
+    }
+  }
+}
+
+# Update incident status
+mutation UpdateStatus {
+  updateIncidentStatus(
+    id: "1"
+    status: IN_PROGRESS
+    message: "Equipe d'intervention envoyée sur place"
+  ) {
+    id
+    title
+    status
+    updated_at
+  }
+}
+
+# Resolve incident
+mutation ResolveIncident {
+  updateIncidentStatus(
+    id: "1"
+    status: RESOLVED
+    message: "Incident résolu, circulation rétablie"
+  ) {
+    id
+    title
+    status
+    resolved_at
+  }
+}
+
+# Incident statistics
+query IncidentStats {
+  incidentStats {
+    total
+    reported
+    in_progress
+    resolved
+    accidents
+    constructions
+    road_closures
+    traffic_jams
+    critical
+  }
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# 5. NOTIFICATIONS
+# ─────────────────────────────────────────────────────────────
+
+# Send notification
+mutation SendNotification {
+  sendNotification(
+    title: "Alerte Trafic"
+    message: "Congestion détectée sur Avenue Bourguiba - Prévoir 30 min de délai"
+    type: ALERT
+    priority: HIGH
+    recipientRole: ALL
+  ) {
+    id
+    title
+    message
+    type
+    priority
+    is_read
+    created_at
+  }
+}
+
+# Send urgent notification to admins
+mutation SendUrgentNotification {
+  sendNotification(
+    title: "🚨 INCIDENT CRITIQUE"
+    message: "Accident grave sur autoroute A1. Intervention immédiate requise."
+    type: INCIDENT
+    priority: URGENT
+    recipientRole: ADMIN
+    referenceType: "incident"
+    referenceId: "1"
+  ) {
+    id
+    title
+    priority
+    recipient_role
+  }
+}
+
+# Get my notifications
+query MyNotifications {
+  notifications(page: 1, limit: 10) {
+    notifications {
+      id
+      title
+      message
+      type
+      priority
+      is_read
+      created_at
+    }
+    total
+    unread
+    page
+  }
+}
+
+# Get unread notifications only
+query UnreadNotifications {
+  notifications(is_read: false) {
+    notifications {
+      id
+      title
+      type
+      priority
+      created_at
+    }
+    unread
+  }
+}
+
+# Mark notification as read
+mutation MarkRead {
+  markNotificationRead(id: "1") {
+    id
+    title
+    is_read
+    read_at
+  }
+}
+
+# Mark all as read
+mutation MarkAllRead {
+  markAllNotificationsRead {
+    message
+    success
+  }
+}
+
+# Delete notification
+mutation DeleteNotification {
+  deleteNotification(id: "1") {
+    message
+    success
+  }
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# 6. PLATFORM HEALTH
+# ─────────────────────────────────────────────────────────────
+
+query PlatformHealth {
+  health {
+    gateway {
+      service
+      status
+      timestamp
+    }
+    services {
+      service
+      status
+      timestamp
+    }
+  }
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# 7. COMPLEX QUERIES (Dashboard)
+# ─────────────────────────────────────────────────────────────
+
+# Dashboard query - all at once
+query Dashboard {
+  trafficStats {
+    total_zones
+    congested_zones
+    high_density_zones
+    total_vehicles
+    avg_speed
+  }
+  incidentStats {
+    total
+    reported
+    in_progress
+    critical
+  }
+  congestedZones {
+    total
+    congested_zones {
+      zone_id
+      density_level
+      congestion_score
+    }
+  }
+  incidents(status: REPORTED, limit: 5) {
+    incidents {
+      id
+      title
+      type
+      severity
+      created_at
+    }
+    total
+  }
+  notifications(is_read: false, limit: 5) {
+    notifications {
+      id
+      title
+      priority
+      type
+    }
+    unread
+  }
+}

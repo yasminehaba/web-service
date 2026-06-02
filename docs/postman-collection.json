@@ -1,0 +1,352 @@
+{
+  "info": {
+    "name": "Urban Traffic Platform - API Collection",
+    "description": "Collection complète pour la plateforme de gestion du trafic urbain",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "gateway_url", "value": "http://localhost:4000" },
+    { "key": "auth_url", "value": "http://localhost:4001" },
+    { "key": "vehicle_url", "value": "http://localhost:4002" },
+    { "key": "traffic_url", "value": "http://localhost:4003" },
+    { "key": "incident_url", "value": "http://localhost:4004" },
+    { "key": "notification_url", "value": "http://localhost:4005" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth Service",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{auth_url}}/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Test@1234\",\n  \"role\": \"OPERATOR\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["const data = pm.response.json();", "if (data.token) pm.collectionVariables.set('token', data.token);"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{auth_url}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@urbantraffic.com\",\n  \"password\": \"Admin@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "url": "{{auth_url}}/auth/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "List Users (Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{auth_url}}/auth/users",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚗 Vehicle Service",
+      "item": [
+        {
+          "name": "Add Vehicle",
+          "request": {
+            "method": "POST",
+            "url": "{{vehicle_url}}/vehicles",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"license_plate\": \"TU-9999-XX\",\n  \"type\": \"CAR\",\n  \"brand\": \"Toyota\",\n  \"model\": \"Corolla\",\n  \"color\": \"Gris\",\n  \"owner_name\": \"Sami Ben Salem\",\n  \"owner_contact\": \"+216 71 999 000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Vehicles",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{vehicle_url}}/vehicles?page=1&limit=10", "query": [{"key":"page","value":"1"},{"key":"limit","value":"10"}] },
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Get Vehicle",
+          "request": {
+            "method": "GET",
+            "url": "{{vehicle_url}}/vehicles/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Record GPS Position",
+          "request": {
+            "method": "POST",
+            "url": "{{vehicle_url}}/vehicles/1/positions",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 36.8065,\n  \"longitude\": 10.1815,\n  \"speed\": 45.5,\n  \"heading\": 180\n}"
+            }
+          }
+        },
+        {
+          "name": "Simulate Movement",
+          "request": {
+            "method": "POST",
+            "url": "{{vehicle_url}}/vehicles/1/simulate",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Get Position History",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{vehicle_url}}/vehicles/1/positions?limit=20", "query": [{"key":"limit","value":"20"}] },
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚦 Traffic Service",
+      "item": [
+        {
+          "name": "Create Zone",
+          "request": {
+            "method": "POST",
+            "url": "{{traffic_url}}/traffic/zones",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Carrefour El Aouina\",\n  \"description\": \"Carrefour principal El Aouina\",\n  \"zone_type\": \"INTERSECTION\",\n  \"center_lat\": 36.8420,\n  \"center_lng\": 10.2150,\n  \"radius_meters\": 350,\n  \"max_capacity\": 100\n}"
+            }
+          }
+        },
+        {
+          "name": "List Zones",
+          "request": {
+            "method": "GET",
+            "url": "{{traffic_url}}/traffic/zones",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Measure Traffic",
+          "request": {
+            "method": "POST",
+            "url": "{{traffic_url}}/traffic/zones/1/measure",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle_count\": 150,\n  \"average_speed\": 15\n}"
+            }
+          }
+        },
+        {
+          "name": "Simulate Traffic",
+          "request": {
+            "method": "POST",
+            "url": "{{traffic_url}}/traffic/zones/1/simulate",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Get Congested Zones",
+          "request": {
+            "method": "GET",
+            "url": "{{traffic_url}}/traffic/congested",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Global Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{traffic_url}}/traffic/stats",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚠️ Incident Service",
+      "item": [
+        {
+          "name": "Declare Incident",
+          "request": {
+            "method": "POST",
+            "url": "{{incident_url}}/incidents",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Accident Avenue Bourguiba\",\n  \"description\": \"Accident entre deux voitures\",\n  \"type\": \"ACCIDENT\",\n  \"severity\": \"HIGH\",\n  \"latitude\": 36.8065,\n  \"longitude\": 10.1815,\n  \"zone_id\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "List Incidents",
+          "request": {
+            "method": "GET",
+            "url": "{{incident_url}}/incidents",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Get Incident",
+          "request": {
+            "method": "GET",
+            "url": "{{incident_url}}/incidents/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Update Status",
+          "request": {
+            "method": "PUT",
+            "url": "{{incident_url}}/incidents/1/status",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_PROGRESS\",\n  \"message\": \"Equipe sur place\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Incident Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{incident_url}}/incidents/stats/summary",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔔 Notification Service",
+      "item": [
+        {
+          "name": "Send Notification",
+          "request": {
+            "method": "POST",
+            "url": "{{notification_url}}/notifications",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Alerte Trafic\",\n  \"message\": \"Congestion sur Avenue Bourguiba\",\n  \"type\": \"ALERT\",\n  \"priority\": \"HIGH\",\n  \"recipient_role\": \"ALL\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "method": "GET",
+            "url": "{{notification_url}}/notifications",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Mark as Read",
+          "request": {
+            "method": "PATCH",
+            "url": "{{notification_url}}/notifications/1/read",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "Mark All as Read",
+          "request": {
+            "method": "PATCH",
+            "url": "{{notification_url}}/notifications/read-all/mark",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 GraphQL Gateway",
+      "item": [
+        {
+          "name": "GraphQL - Login",
+          "request": {
+            "method": "POST",
+            "url": "{{gateway_url}}/graphql",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation { login(email: \\\"admin@urbantraffic.com\\\", password: \\\"Admin@123\\\") { token message user { id username role } } }\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GraphQL - Dashboard",
+          "request": {
+            "method": "POST",
+            "url": "{{gateway_url}}/graphql",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { trafficStats { total_zones congested_zones total_vehicles } incidentStats { total reported in_progress } notifications(is_read: false) { unread } }\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GraphQL - Platform Health",
+          "request": {
+            "method": "POST",
+            "url": "{{gateway_url}}/graphql",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { health { gateway { service status timestamp } services { service status timestamp } } }\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
