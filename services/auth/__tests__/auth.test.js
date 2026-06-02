@@ -2,7 +2,8 @@
  * Tests unitaires pour le service d'authentification
  * Couvre: register, login, authentication middleware, JWT tokens
  */
-
+const request = require('supertest');
+const { app } = require('../index');
 describe('Auth Service - Validation et Middleware', () => {
   
   describe('Validation des données d\'entrée', () => {

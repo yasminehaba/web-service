@@ -2,7 +2,8 @@
  * Tests unitaires pour le service Trafic
  * Couvre: état du trafic, congestion, analyse du flux
  */
-
+const request = require('supertest');
+const { app } = require('../index');
 describe('Traffic Service - Gestion du trafic', () => {
 
   describe('Validation des données de trafic', () => {

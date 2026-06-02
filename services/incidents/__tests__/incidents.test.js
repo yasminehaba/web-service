@@ -2,7 +2,8 @@
  * Tests unitaires pour le service Incidents
  * Couvre: création, signalement, gestion des incidents
  */
-
+const request = require('supertest');
+const { app } = require('../index');
 describe('Incident Service - Gestion des incidents', () => {
 
   describe('Validation des types d\'incidents', () => {

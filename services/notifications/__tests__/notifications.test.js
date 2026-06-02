@@ -2,7 +2,8 @@
  * Tests unitaires pour le service Notifications
  * Couvre: envoi, formatage, gestion des notifications
  */
-
+const request = require('supertest');
+const { app } = require('../index');
 describe('Notification Service - Gestion des notifications', () => {
 
   describe('Types de notifications', () => {

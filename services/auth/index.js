@@ -220,3 +220,10 @@ testConnection().then(() => {
     console.log(`🔐 Auth Service running on port ${PORT}`);
   });
 });
+module.exports = {
+  app,
+  authenticate,
+  requireAdmin,
+  registerValidation,
+  loginValidation
+};

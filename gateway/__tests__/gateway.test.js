@@ -2,7 +2,8 @@
  * Tests unitaires pour le Gateway GraphQL
  * Couvre: Context, resolvers, authentification GraphQL
  */
-
+const request = require('supertest');
+const { app } = require('../index');
 describe('Gateway GraphQL - Context et Authentification', () => {
 
   describe('Extraction du JWT depuis les headers', () => {

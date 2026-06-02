@@ -253,3 +253,11 @@ pool.getConnection()
   .catch(err => { console.error('❌ Incident Service: DB failed:', err.message); process.exit(1); });
 
 app.listen(PORT, () => console.log(`⚠️  Incident Service running on port ${PORT}`));
+module.exports = {
+  app,
+  createIncident,
+  updateIncidentStatus,
+  validateSeverity,
+  validateIncidentType,
+  getIncidentsByArea
+};

@@ -263,3 +263,11 @@ pool.getConnection()
   .catch(err => { console.error('❌ Vehicle Service: DB failed:', err.message); process.exit(1); });
 
 app.listen(PORT, () => console.log(`🚗 Vehicle Service running on port ${PORT}`));
+module.exports = {
+  app,
+  validatePlateNumber,
+  validateVehicleType,
+  updateLocation,
+  updateStatus,
+  calculateDistance
+};

@@ -284,3 +284,11 @@ pool.getConnection()
   .catch(err => { console.error('❌ Traffic Service: DB failed:', err.message); process.exit(1); });
 
 app.listen(PORT, () => console.log(`🚦 Traffic Service running on port ${PORT}`));
+module.exports = {
+  app,
+  calculateCongestionLevel,
+  calculateAverageSpeed,
+  predictTraffic,
+  detectAnomaly,
+  generateTrafficReport
+};

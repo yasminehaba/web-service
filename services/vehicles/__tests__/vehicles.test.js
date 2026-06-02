@@ -2,7 +2,8 @@
  * Tests unitaires pour le service Véhicules
  * Couvre: validation des données, gestion des véhicules
  */
-
+const request = require('supertest');
+const { app } = require('../index');
 describe('Vehicle Service - Gestion des véhicules', () => {
 
   describe('Validation des données véhicule', () => {

@@ -171,3 +171,12 @@ pool.getConnection()
   .catch(err => { console.error('❌ Notification Service: DB failed:', err.message); process.exit(1); });
 
 app.listen(PORT, () => console.log(`🔔 Notification Service running on port ${PORT}`));
+module.exports = {
+  app,
+  createNotification,
+  sendNotification,
+  processQueue,
+  retryNotification,
+  validateNotificationType,
+  validatePriority
+};
