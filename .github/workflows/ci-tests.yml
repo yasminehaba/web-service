@@ -1,0 +1,104 @@
+name: CI - Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        component:
+          - gateway
+          - auth
+          - vehicles
+          - traffic
+          - incidents
+          - notifications
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          cd web-service
+          npm install
+          cd ./gateway
+          npm install
+        if: matrix.component == 'gateway'
+
+      - name: Run tests - gateway
+        run: |
+          cd web-service/gateway
+          npm test
+        if: matrix.component == 'gateway'
+
+      - name: Install dependencies
+        run: |
+          cd web-service/services/auth
+          npm install
+        if: matrix.component == 'auth'
+
+      - name: Run tests - auth
+        run: |
+          cd web-service/services/auth
+          npm test
+        if: matrix.component == 'auth'
+
+      - name: Install dependencies
+        run: |
+          cd web-service/services/vehicles
+          npm install
+        if: matrix.component == 'vehicles'
+
+      - name: Run tests - vehicles
+        run: |
+          cd web-service/services/vehicles
+          npm test
+        if: matrix.component == 'vehicles'
+
+      - name: Install dependencies
+        run: |
+          cd web-service/services/traffic
+          npm install
+        if: matrix.component == 'traffic'
+
+      - name: Run tests - traffic
+        run: |
+          cd web-service/services/traffic
+          npm test
+        if: matrix.component == 'traffic'
+
+      - name: Install dependencies
+        run: |
+          cd web-service/services/incidents
+          npm install
+        if: matrix.component == 'incidents'
+
+      - name: Run tests - incidents
+        run: |
+          cd web-service/services/incidents
+          npm test
+        if: matrix.component == 'incidents'
+
+      - name: Install dependencies
+        run: |
+          cd web-service/services/notifications
+          npm install
+        if: matrix.component == 'notifications'
+
+      - name: Run tests - notifications
+        run: |
+          cd web-service/services/notifications
+          npm test
+        if: matrix.component == 'notifications'

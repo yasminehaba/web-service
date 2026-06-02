@@ -1,0 +1,13 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY services/incidents/package.json ./services/incidents/package.json
+RUN npm --prefix services/incidents install
+
+COPY services/incidents ./services/incidents
+
+EXPOSE 4004
+
+CMD ["node","services/incidents/index.js"]
+

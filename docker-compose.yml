@@ -1,0 +1,137 @@
+name: urban-traffic
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: urban-traffic-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: urban_traffic
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    ports:
+      - "3307:3306"
+    volumes:
+      - urban_traffic_mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+  gateway:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.gateway
+    container_name: urban-traffic-gateway
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      PORT: 4000
+      GATEWAY_PORT: 4000
+      JWT_SECRET: "change_me"
+      AUTH_SERVICE_URL: "http://auth:4001"
+      VEHICLE_SERVICE_URL: "http://vehicles:4002"
+      TRAFFIC_SERVICE_URL: "http://traffic:4003"
+      INCIDENT_SERVICE_URL: "http://incidents:4004"
+      NOTIFICATION_SERVICE_URL: "http://notifications:4005"
+    ports:
+      - "4000:4000"
+
+  auth:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.auth
+    container_name: urban-traffic-auth
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      VEHICLE_SERVICE_PORT: 4001
+      AUTH_SERVICE_PORT: 4001
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: urban_traffic
+      JWT_SECRET: "change_me"
+    ports:
+      - "4001:4001"
+
+  vehicles:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.vehicles
+    container_name: urban-traffic-vehicles
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      VEHICLE_SERVICE_PORT: 4002
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: urban_traffic
+      JWT_SECRET: "change_me"
+    ports:
+      - "4002:4002"
+
+  traffic:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.traffic
+    container_name: urban-traffic-traffic
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      TRAFFIC_SERVICE_PORT: 4003
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: urban_traffic
+      JWT_SECRET: "change_me"
+    ports:
+      - "4003:4003"
+
+  incidents:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.incidents
+    container_name: urban-traffic-incidents
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      INCIDENT_SERVICE_PORT: 4004
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: urban_traffic
+      JWT_SECRET: "change_me"
+    ports:
+      - "4004:4004"
+
+  notifications:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.notifications
+    container_name: urban-traffic-notifications
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      NOTIFICATION_SERVICE_PORT: 4005
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: urban_traffic
+      JWT_SECRET: "change_me"
+    ports:
+      - "4005:4005"
+
+volumes:
+  urban_traffic_mysql_data:
+

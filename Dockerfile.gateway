@@ -1,0 +1,16 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install gateway deps
+COPY package.json ./
+COPY gateway/package.json ./gateway/package.json
+RUN npm --prefix gateway install
+
+# Copy source
+COPY gateway ./gateway
+
+EXPOSE 4000
+
+CMD ["node","gateway/index.js"]
+

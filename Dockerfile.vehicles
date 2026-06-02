@@ -1,0 +1,13 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY services/vehicles/package.json ./services/vehicles/package.json
+RUN npm --prefix services/vehicles install
+
+COPY services/vehicles ./services/vehicles
+
+EXPOSE 4002
+
+CMD ["node","services/vehicles/index.js"]
+
